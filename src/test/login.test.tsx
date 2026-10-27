@@ -1,23 +1,22 @@
-import { act, fireEvent, render, screen, cleanup } from "@testing-library/react";
+import { fireEvent, render, screen, cleanup, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { LoginPage } from "@/pages/login/LoginPage";
+import { LoginPage } from "@/components/features/login/LoginPage";
+import { signIn } from "@/services/auth";
+const navigate = vi.fn();
+vi.mock("@tanstack/react-router", () => ({ useNavigate: () => navigate }));
+vi.mock("@/services/auth", () => ({ signIn: vi.fn() }));
 
-afterEach(() => { cleanup(); vi.useRealTimers(); });
+afterEach(() => { cleanup(); vi.clearAllMocks(); });
 
-describe("UI-only login", () => {
-  it("never grants a session or navigates after submission", async () => {
-    vi.useFakeTimers();
-    const initialUrl = window.location.href;
-    const storage = vi.spyOn(Storage.prototype, "setItem");
+describe("Real login", () => {
+  it("does not navigate when credentials are rejected", async () => {
+    vi.mocked(signIn).mockRejectedValue(new Error("Email hoặc mật khẩu không đúng."));
     render(<LoginPage />);
     fireEvent.change(screen.getByLabelText("Email"), { target: { value: "test@example.com" } });
     fireEvent.change(screen.getByLabelText("Mật khẩu", { exact: true }), { target: { value: "not-a-real-password" } });
     fireEvent.submit(screen.getByLabelText("Email").closest("form") as HTMLFormElement);
-    expect(screen.getByRole("button", { name: "Đang xử lý…" })).toBeDisabled();
-    await act(async () => { await vi.advanceTimersByTimeAsync(600); });
-    expect(screen.getByRole("alert")).toBeInTheDocument();
-    expect(window.location.href).toBe(initialUrl);
-    expect(storage).not.toHaveBeenCalled();
-    storage.mockRestore();
+    await waitFor(() => expect(screen.getByRole("alert")).toBeInTheDocument());
+    expect(signIn).toHaveBeenCalledWith("test@example.com", "not-a-real-password");
+    expect(navigate).not.toHaveBeenCalled();
   });
 });

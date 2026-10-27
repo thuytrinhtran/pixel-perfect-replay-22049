@@ -6,7 +6,7 @@ export function assignedRole(role: string | null | undefined): Role | null {
   if (role === "SUPERVISOR") return "supervisor";
   return null;
 }
-export function loginError(error: { code?: string; message?: string }): string {
+export function loginError(error: { code?: string | undefined; message?: string | undefined }): string {
   if (error.code === "invalid_credentials" || /invalid login credentials/i.test(error.message ?? "")) return "Email hoặc mật khẩu không đúng. Vui lòng thử lại.";
   if (error.code === "email_not_confirmed") return "Email chưa được xác nhận. Vui lòng kiểm tra hộp thư.";
   if (error.code === "over_request_rate_limit") return "Bạn đã thử quá nhiều lần. Vui lòng chờ rồi thử lại.";

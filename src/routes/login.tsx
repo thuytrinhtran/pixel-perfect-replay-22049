@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { LoginPage } from "@/components/features/login/LoginPage";
 
 export const Route = createFileRoute("/login")({
-  validateSearch: (search: Record<string, unknown>) => ({ unassigned: search.unassigned === true || search.unassigned === "true" }),
+  validateSearch: (search: Record<string, unknown>): { unassigned?: boolean } => ({ unassigned: search['unassigned'] === true || search['unassigned'] === "true" }),
   head: () => ({
     meta: [
       { title: "Đăng nhập — JolliShift" },
