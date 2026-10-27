@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { LoginPage } from "@/pages/login/LoginPage";
+import { LoginPage } from "@/components/features/login/LoginPage";
 
 export const Route = createFileRoute("/login")({
+  validateSearch: (search: Record<string, unknown>) => ({ unassigned: search.unassigned === true || search.unassigned === "true" }),
   head: () => ({
     meta: [
       { title: "Đăng nhập — JolliShift" },
@@ -12,5 +13,5 @@ export const Route = createFileRoute("/login")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: LoginPage,
+  component: () => <LoginPage unassigned={Route.useSearch().unassigned} />,
 });

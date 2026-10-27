@@ -10,6 +10,8 @@
 <!-- LOVABLE:END -->
 
 ## Architecture
-- Role navigation lives in src/config/navigation.ts; routes `/$role` and `/$role/$section` render from it — add features by registering a page in src/pages/registry.ts, not new route files.
-- Code is split into src/pages, src/components, src/hooks, src/services, src/types so team members can work per feature.
-- The shared login screen lives in src/pages/login and / redirects to /login; role routes remain ungated UI previews until authentication is implemented, so the login form must never grant a session or navigate to a dashboard.
+- Role navigation lives in src/config/navigation.ts; protected dynamic role routes retain existing URLs and dispatch through src/components/features/registry.ts to preserve dashboard links.
+- Non-routable feature screens live in src/components/features; route definitions live only in src/routes to comply with TanStack routing.
+- Public /login authenticates existing accounts; the pathless _authenticated layout verifies sessions before role routes render.
+- Authorization reads only the authenticated caller's existing read-only profiles row through requireSupabaseAuth, never URL, storage or metadata; retain this legacy schema without new tables and never grant clients profile-role writes.
+- Attach bearer tokens through functionMiddleware; a single root auth subscriber tracks sessions, and sign-out cancels and clears protected queries to prevent stale data.

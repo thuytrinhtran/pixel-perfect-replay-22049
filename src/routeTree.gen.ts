@@ -10,19 +10,19 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as RoleRouteImport } from './routes/$role'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as LoginRouteImport } from './routes/login'
-import { Route as RoleIndexRouteImport } from './routes/$role.index'
-import { Route as RoleSectionRouteImport } from './routes/$role.$section'
+import { Route as AuthenticatedRoleRouteImport } from './routes/_authenticated/$role'
+import { Route as AuthenticatedRoleIndexRouteImport } from './routes/_authenticated/$role.index'
+import { Route as AuthenticatedRoleSectionRouteImport } from './routes/_authenticated/$role.$section'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const RoleRoute = RoleRouteImport.update({
-  id: '/$role',
-  path: '/$role',
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -30,49 +30,63 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const RoleIndexRoute = RoleIndexRouteImport.update({
+const AuthenticatedRoleRoute = AuthenticatedRoleRouteImport.update({
+  id: '/$role',
+  path: '/$role',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedRoleIndexRoute = AuthenticatedRoleIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => RoleRoute,
+  getParentRoute: () => AuthenticatedRoleRoute,
 } as any)
-const RoleSectionRoute = RoleSectionRouteImport.update({
-  id: '/$section',
-  path: '/$section',
-  getParentRoute: () => RoleRoute,
-} as any)
+const AuthenticatedRoleSectionRoute =
+  AuthenticatedRoleSectionRouteImport.update({
+    id: '/$section',
+    path: '/$section',
+    getParentRoute: () => AuthenticatedRoleRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/$role': typeof RoleRouteWithChildren
   '/login': typeof LoginRoute
-  '/$role/$section': typeof RoleSectionRoute
-  '/$role/': typeof RoleIndexRoute
+  '/$role': typeof AuthenticatedRoleRouteWithChildren
+  '/$role/$section': typeof AuthenticatedRoleSectionRoute
+  '/$role/': typeof AuthenticatedRoleIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/$role/$section': typeof RoleSectionRoute
-  '/$role': typeof RoleIndexRoute
+  '/$role/$section': typeof AuthenticatedRoleSectionRoute
+  '/$role': typeof AuthenticatedRoleIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/$role': typeof RoleRouteWithChildren
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/login': typeof LoginRoute
-  '/$role/$section': typeof RoleSectionRoute
-  '/$role/': typeof RoleIndexRoute
+  '/_authenticated/$role': typeof AuthenticatedRoleRouteWithChildren
+  '/_authenticated/$role/$section': typeof AuthenticatedRoleSectionRoute
+  '/_authenticated/$role/': typeof AuthenticatedRoleIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/$role' | '/login' | '/$role/$section' | '/$role/'
+  fullPaths: '/' | '/login' | '/$role' | '/$role/$section' | '/$role/'
   fileRoutesByTo: FileRoutesByTo
   to: '/' | '/login' | '/$role/$section' | '/$role'
-  id: '__root__' | '/' | '/$role' | '/login' | '/$role/$section' | '/$role/'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/login'
+    | '/_authenticated/$role'
+    | '/_authenticated/$role/$section'
+    | '/_authenticated/$role/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  RoleRoute: typeof RoleRouteWithChildren
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   LoginRoute: typeof LoginRoute
 }
 
@@ -85,11 +99,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/$role': {
-      id: '/$role'
-      path: '/$role'
-      fullPath: '/$role'
-      preLoaderRoute: typeof RoleRouteImport
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -99,38 +113,57 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/$role/': {
-      id: '/$role/'
+    '/_authenticated/$role': {
+      id: '/_authenticated/$role'
+      path: '/$role'
+      fullPath: '/$role'
+      preLoaderRoute: typeof AuthenticatedRoleRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/$role/': {
+      id: '/_authenticated/$role/'
       path: '/'
       fullPath: '/$role/'
-      preLoaderRoute: typeof RoleIndexRouteImport
-      parentRoute: typeof RoleRoute
+      preLoaderRoute: typeof AuthenticatedRoleIndexRouteImport
+      parentRoute: typeof AuthenticatedRoleRoute
     }
-    '/$role/$section': {
-      id: '/$role/$section'
+    '/_authenticated/$role/$section': {
+      id: '/_authenticated/$role/$section'
       path: '/$section'
       fullPath: '/$role/$section'
-      preLoaderRoute: typeof RoleSectionRouteImport
-      parentRoute: typeof RoleRoute
+      preLoaderRoute: typeof AuthenticatedRoleSectionRouteImport
+      parentRoute: typeof AuthenticatedRoleRoute
     }
   }
 }
 
-interface RoleRouteChildren {
-  RoleSectionRoute: typeof RoleSectionRoute
-  RoleIndexRoute: typeof RoleIndexRoute
+interface AuthenticatedRoleRouteChildren {
+  AuthenticatedRoleSectionRoute: typeof AuthenticatedRoleSectionRoute
+  AuthenticatedRoleIndexRoute: typeof AuthenticatedRoleIndexRoute
 }
 
-const RoleRouteChildren: RoleRouteChildren = {
-  RoleSectionRoute: RoleSectionRoute,
-  RoleIndexRoute: RoleIndexRoute,
+const AuthenticatedRoleRouteChildren: AuthenticatedRoleRouteChildren = {
+  AuthenticatedRoleSectionRoute: AuthenticatedRoleSectionRoute,
+  AuthenticatedRoleIndexRoute: AuthenticatedRoleIndexRoute,
 }
 
-const RoleRouteWithChildren = RoleRoute._addFileChildren(RoleRouteChildren)
+const AuthenticatedRoleRouteWithChildren =
+  AuthenticatedRoleRoute._addFileChildren(AuthenticatedRoleRouteChildren)
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedRoleRoute: typeof AuthenticatedRoleRouteWithChildren
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedRoleRoute: AuthenticatedRoleRouteWithChildren,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  RoleRoute: RoleRouteWithChildren,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   LoginRoute: LoginRoute,
 }
 export const routeTree = rootRouteImport

@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ROLES, isRole } from "@/config/navigation";
-import { RoleDashboard } from "@/pages/dashboard/RoleDashboard";
+import { RoleDashboard } from "@/components/features/dashboard/RoleDashboard";
 
-export const Route = createFileRoute("/$role/")({
+export const Route = createFileRoute("/_authenticated/$role/")({
   head: ({ params }) => {
     const label = isRole(params.role) ? ROLES[params.role].label : "";
     const title = `Tổng quan ${label} — JolliShift`;
