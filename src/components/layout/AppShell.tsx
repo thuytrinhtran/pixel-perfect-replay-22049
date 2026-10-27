@@ -1,6 +1,8 @@
 import { useState, type ReactNode } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
-import { ArrowLeftRight, CalendarClock, Menu, X } from "lucide-react";
+import { LogOut, Menu, UserRound, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import logo from "@/assets/jollishift-logo.jpg.asset.json";
 import type { RoleConfig } from "@/types";
 import { cn } from "@/lib/utils";
 
@@ -9,9 +11,7 @@ function SidebarNav({ config, onNavigate }: { config: RoleConfig; onNavigate?: (
   return (
     <div className="flex h-full flex-col bg-sidebar text-sidebar-foreground">
       <div className="flex items-center gap-3 px-5 py-5">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-sidebar-primary text-sidebar-primary-foreground">
-          <CalendarClock className="h-5 w-5" />
-        </div>
+        <img src={logo.url} alt="Logo JolliShift" className="h-12 w-12 shrink-0 rounded-md object-contain" />
         <div>
           <div className="text-lg font-extrabold leading-none">JolliShift</div>
           <div className="mt-1 text-xs opacity-80">{config.label}</div>
@@ -41,9 +41,17 @@ function SidebarNav({ config, onNavigate }: { config: RoleConfig; onNavigate?: (
         })}
       </nav>
       <div className="border-t border-sidebar-border p-3">
-        <Link to="/" className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-sidebar-accent">
-          <ArrowLeftRight className="h-4 w-4" /> Đổi vai trò
-        </Link>
+        <div className="flex items-start gap-3 px-3 py-3">
+          <UserRound className="mt-1 h-5 w-5 shrink-0" />
+          <dl className="min-w-0 space-y-1 text-xs">
+            <div><dt className="opacity-70">Họ tên</dt><dd className="font-semibold">—</dd></div>
+            <div><dt className="opacity-70">Vai trò</dt><dd>{config.label}</dd></div>
+            <div><dt className="opacity-70">Cửa hàng</dt><dd>—</dd></div>
+          </dl>
+        </div>
+        <Button asChild variant="ghost" className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground">
+          <Link to="/login" onClick={onNavigate}><LogOut />Đăng xuất</Link>
+        </Button>
         <p className="px-3 pt-2 text-[11px] leading-snug opacity-70">
           Nguyên mẫu học thuật — không phải hệ thống chính thức của Jollibee.
         </p>
@@ -69,13 +77,13 @@ export function AppShell({ config, children }: { config: RoleConfig; children: R
       )}
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-border bg-card/90 px-4 backdrop-blur lg:px-8">
-          <button
-            className="rounded-md p-2 hover:bg-muted lg:hidden"
+          <Button
+            variant="ghost" size="icon" className="lg:hidden"
             onClick={() => setOpen((o) => !o)}
             aria-label="Mở menu"
           >
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
+          </Button>
           <span className="font-semibold lg:hidden">JolliShift</span>
           <div className="ml-auto flex items-center gap-2 text-sm">
             <span className="rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-secondary-foreground">
