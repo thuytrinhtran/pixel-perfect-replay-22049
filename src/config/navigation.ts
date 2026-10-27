@@ -11,10 +11,8 @@ import {
   LifeBuoy,
   Repeat,
   ShieldCheck,
-  SlidersHorizontal,
   User,
   Users,
-  UsersRound,
 } from "lucide-react";
 import type { NavItem, Role, RoleConfig } from "@/types";
 
