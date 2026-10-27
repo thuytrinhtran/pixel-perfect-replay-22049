@@ -12,3 +12,4 @@
 ## Architecture
 - Role navigation lives in src/config/navigation.ts; routes `/$role` and `/$role/$section` render from it — add features by registering a page in src/pages/registry.ts, not new route files.
 - Code is split into src/pages, src/components, src/hooks, src/services, src/types so team members can work per feature.
+- The shared login screen lives in src/pages/login and / redirects to /login; role routes remain ungated UI previews until authentication is implemented, so the login form must never grant a session or navigate to a dashboard.

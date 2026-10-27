@@ -17,6 +17,8 @@ export const Route = createFileRoute("/$role/$section")({
         { name: "description", content: item?.description ?? "" },
         { property: "og:title", content: title },
         { property: "og:description", content: item?.description ?? "" },
+        { property: "og:type", content: "website" },
+        { name: "twitter:card", content: "summary_large_image" },
       ],
     };
   },
@@ -27,5 +29,7 @@ function SectionPage() {
   const { role, section } = Route.useParams();
   const Impl = FEATURE_PAGES[`${role as Role}/${section}`];
   if (Impl) return <Impl />;
-  return <FeaturePage item={findNavItem(role as Role, section)!} />;
+  const item = findNavItem(role as Role, section);
+  if (!item) return null;
+  return <FeaturePage item={item} />;
 }

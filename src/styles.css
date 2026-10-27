@@ -101,6 +101,8 @@
   --sidebar-ring: oklch(0.85 0.165 85);
   --gradient-hero: linear-gradient(120deg, var(--primary), var(--primary-deep));
   --shadow-card: 0 1px 2px oklch(0.2 0.02 30 / 6%), 0 8px 24px -12px oklch(0.2 0.02 30 / 12%);
+  --login-overlay: oklch(0.28 0.08 27 / 18%);
+  --shadow-login: 0 16px 64px oklch(0.2 0.02 30 / 20%);
 }
 
 .dark {
@@ -150,3 +152,13 @@
 }
 
 @utility bg-hero { background-image: var(--gradient-hero); }
+
+.login-scene { position: relative; isolation: isolate; display: flex; align-items: center; justify-content: flex-end; min-height: 100svh; padding: 40px max(5%, calc((100% - 1280px) / 2)); }
+.login-background { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 42% center; z-index: -2; }
+.login-overlay { position: absolute; inset: 0; background: var(--login-overlay); z-index: -1; }
+.login-panel { width: 100%; max-width: 420px; padding: 32px; border-radius: 8px; background: var(--card); color: var(--card-foreground); box-shadow: var(--shadow-login); }
+@media (max-width: 767px) {
+  .login-scene { justify-content: center; padding: 32px 16px; }
+  .login-background { object-position: 58% center; }
+  .login-panel { padding: 28px 24px; }
+}
