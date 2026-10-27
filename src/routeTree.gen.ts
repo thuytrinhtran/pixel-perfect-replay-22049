@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedRoleRouteImport } from './routes/_authenticated/$role'
 import { Route as AuthenticatedRoleIndexRouteImport } from './routes/_authenticated/$role.index'
@@ -20,15 +21,19 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedRoleRoute = AuthenticatedRoleRouteImport.update({
-  id: '/_authenticated/$role',
+  id: '/$role',
   path: '/$role',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedRoleIndexRoute = AuthenticatedRoleIndexRouteImport.update({
   id: '/',
@@ -58,6 +63,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/login': typeof LoginRoute
   '/_authenticated/$role': typeof AuthenticatedRoleRouteWithChildren
   '/_authenticated/$role/$section': typeof AuthenticatedRoleSectionRoute
@@ -71,6 +77,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
     | '/login'
     | '/_authenticated/$role'
     | '/_authenticated/$role/$section'
@@ -79,8 +86,8 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   LoginRoute: typeof LoginRoute
-  AuthenticatedRoleRoute: typeof AuthenticatedRoleRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -90,6 +97,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -104,7 +118,7 @@ declare module '@tanstack/react-router' {
       path: '/$role'
       fullPath: '/$role'
       preLoaderRoute: typeof AuthenticatedRoleRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/$role/': {
       id: '/_authenticated/$role/'
@@ -136,10 +150,21 @@ const AuthenticatedRoleRouteChildren: AuthenticatedRoleRouteChildren = {
 const AuthenticatedRoleRouteWithChildren =
   AuthenticatedRoleRoute._addFileChildren(AuthenticatedRoleRouteChildren)
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedRoleRoute: typeof AuthenticatedRoleRouteWithChildren
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedRoleRoute: AuthenticatedRoleRouteWithChildren,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   LoginRoute: LoginRoute,
-  AuthenticatedRoleRoute: AuthenticatedRoleRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
