@@ -4,7 +4,7 @@ import { FeaturePage } from "@/pages/FeaturePage";
 import { FEATURE_PAGES } from "@/pages/registry";
 import type { Role } from "@/types";
 
-export const Route = createFileRoute("/$role/$section")({
+export const Route = createFileRoute("/_authenticated/$role/$section")({
   beforeLoad: ({ params }) => {
     if (!isRole(params.role) || !findNavItem(params.role, params.section)) throw notFound();
   },

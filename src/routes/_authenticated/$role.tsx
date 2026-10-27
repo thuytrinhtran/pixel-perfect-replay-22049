@@ -2,7 +2,7 @@ import { createFileRoute, notFound, Outlet } from "@tanstack/react-router";
 import { ROLES, isRole } from "@/config/navigation";
 import { AppShell } from "@/components/layout/AppShell";
 
-export const Route = createFileRoute("/$role")({
+export const Route = createFileRoute("/_authenticated/$role")({
   beforeLoad: ({ params }) => {
     if (!isRole(params.role)) throw notFound();
   },
