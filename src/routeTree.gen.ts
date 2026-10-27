@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RoleRouteImport } from './routes/$role'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as RoleIndexRouteImport } from './routes/$role.index'
 import { Route as RoleSectionRouteImport } from './routes/$role.$section'
 
@@ -22,6 +23,11 @@ const IndexRoute = IndexRouteImport.update({
 const RoleRoute = RoleRouteImport.update({
   id: '/$role',
   path: '/$role',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RoleIndexRoute = RoleIndexRouteImport.update({
@@ -38,11 +44,13 @@ const RoleSectionRoute = RoleSectionRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$role': typeof RoleRouteWithChildren
+  '/login': typeof LoginRoute
   '/$role/$section': typeof RoleSectionRoute
   '/$role/': typeof RoleIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
   '/$role/$section': typeof RoleSectionRoute
   '/$role': typeof RoleIndexRoute
 }
@@ -50,20 +58,22 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/$role': typeof RoleRouteWithChildren
+  '/login': typeof LoginRoute
   '/$role/$section': typeof RoleSectionRoute
   '/$role/': typeof RoleIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/$role' | '/$role/$section' | '/$role/'
+  fullPaths: '/' | '/$role' | '/login' | '/$role/$section' | '/$role/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/$role/$section' | '/$role'
-  id: '__root__' | '/' | '/$role' | '/$role/$section' | '/$role/'
+  to: '/' | '/login' | '/$role/$section' | '/$role'
+  id: '__root__' | '/' | '/$role' | '/login' | '/$role/$section' | '/$role/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   RoleRoute: typeof RoleRouteWithChildren
+  LoginRoute: typeof LoginRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -80,6 +90,13 @@ declare module '@tanstack/react-router' {
       path: '/$role'
       fullPath: '/$role'
       preLoaderRoute: typeof RoleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/$role/': {
@@ -114,6 +131,7 @@ const RoleRouteWithChildren = RoleRoute._addFileChildren(RoleRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   RoleRoute: RoleRouteWithChildren,
+  LoginRoute: LoginRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
