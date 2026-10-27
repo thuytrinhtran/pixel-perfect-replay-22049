@@ -11,10 +11,8 @@ import {
   LifeBuoy,
   Repeat,
   ShieldCheck,
-  SlidersHorizontal,
   User,
   Users,
-  UsersRound,
 } from "lucide-react";
 import type { NavItem, Role, RoleConfig } from "@/types";
 
@@ -56,9 +54,7 @@ export const ROLES: Record<Role, RoleConfig> = {
     nav: [
       dashboard,
       { slug: "tong-hop-dang-ky", title: "Tổng hợp đăng ký", description: "Xem toàn bộ nguyện vọng ca của nhân viên.", icon: ClipboardList },
-      { slug: "nhu-cau-nhan-su", title: "Nhu cầu nhân sự", description: "Thiết lập số người cần cho từng ca.", icon: UsersRound },
-      { slug: "xep-lich", title: "Xếp lịch làm việc", description: "Phân công nhân viên vào các ca.", icon: CalendarRange },
-      { slug: "dieu-chinh-lich", title: "Điều chỉnh lịch", description: "Sửa lịch sau khi đã công bố.", icon: SlidersHorizontal },
+      { slug: "xep-lich", title: "Xếp lịch làm việc", description: "Nhập nhu cầu nhân sự, xem lịch đề xuất và điều chỉnh lịch.", icon: CalendarRange },
       { slug: "xu-ly-doi-ca", title: "Xử lý đổi ca", description: "Duyệt hoặc từ chối yêu cầu đổi ca.", icon: Repeat },
       notifications,
     ],
