@@ -1,7 +1,7 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { findNavItem, isRole } from "@/config/navigation";
-import { FeaturePage } from "@/pages/FeaturePage";
-import { FEATURE_PAGES } from "@/pages/registry";
+import { FeaturePage } from "@/components/features/FeaturePage";
+import { FEATURE_PAGES } from "@/components/features/registry";
 import type { Role } from "@/types";
 
 export const Route = createFileRoute("/_authenticated/$role/$section")({

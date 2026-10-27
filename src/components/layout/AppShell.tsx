@@ -1,12 +1,32 @@
 import { useState, type ReactNode } from "react";
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import type { getCurrentProfile } from "@/services/auth.functions";
 import { LogOut, Menu, UserRound, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logo from "@/assets/jollishift-logo.jpg.asset.json";
 import type { RoleConfig } from "@/types";
 import { cn } from "@/lib/utils";
 
-function SidebarNav({ config, onNavigate }: { config: RoleConfig; onNavigate?: () => void }) {
+type Profile = NonNullable<Awaited<ReturnType<typeof getCurrentProfile>>>;
+function SidebarNav({ config, profile, onNavigate }: { config: RoleConfig; profile: Profile; onNavigate?: () => void }) {
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const [signingOut, setSigningOut] = useState(false);
+  const [error, setError] = useState("");
+  async function handleSignOut() {
+    setSigningOut(true);
+    setError("");
+    try {
+      await queryClient.cancelQueries();
+      queryClient.clear();
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      await navigate({ to: "/login", replace: true });
+    } catch { setError("Chưa thể đăng xuất. Vui lòng thử lại."); }
+    finally { setSigningOut(false); }
+  }
   const path = useRouterState({ select: (s) => s.location.pathname }).replace(/\/$/, "");
   return (
     <div className="flex h-full flex-col bg-sidebar text-sidebar-foreground">
@@ -44,14 +64,15 @@ function SidebarNav({ config, onNavigate }: { config: RoleConfig; onNavigate?: (
         <div className="flex items-start gap-3 px-3 py-3">
           <UserRound className="mt-1 h-5 w-5 shrink-0" />
           <dl className="min-w-0 space-y-1 text-xs">
-            <div><dt className="opacity-70">Họ tên</dt><dd className="font-semibold">—</dd></div>
+            <div><dt className="opacity-70">Họ tên</dt><dd className="font-semibold break-words">{profile.fullName}</dd></div>
             <div><dt className="opacity-70">Vai trò</dt><dd>{config.label}</dd></div>
-            <div><dt className="opacity-70">Cửa hàng</dt><dd>—</dd></div>
+            <div><dt className="opacity-70">Cửa hàng</dt><dd className="break-words">{profile.branchName ?? "—"}</dd></div>
           </dl>
         </div>
-        <Button asChild variant="ghost" className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground">
-          <Link to="/login" onClick={onNavigate}><LogOut />Đăng xuất</Link>
+        <Button onClick={handleSignOut} disabled={signingOut} variant="ghost" className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground">
+          <LogOut />{signingOut ? "Đang đăng xuất…" : "Đăng xuất"}
         </Button>
+        {error && <p role="alert" className="px-3 text-xs">{error}</p>}
         <p className="px-3 pt-2 text-[11px] leading-snug opacity-70">
           Nguyên mẫu học thuật — không phải hệ thống chính thức của Jollibee.
         </p>
@@ -60,18 +81,18 @@ function SidebarNav({ config, onNavigate }: { config: RoleConfig; onNavigate?: (
   );
 }
 
-export function AppShell({ config, children }: { config: RoleConfig; children: ReactNode }) {
+export function AppShell({ config, profile, children }: { config: RoleConfig; profile: Profile; children: ReactNode }) {
   const [open, setOpen] = useState(false);
   return (
     <div className="flex min-h-screen w-full bg-background">
       <aside className="sticky top-0 hidden h-screen w-64 shrink-0 lg:block">
-        <SidebarNav config={config} />
+        <SidebarNav config={config} profile={profile} />
       </aside>
       {open && (
         <div className="fixed inset-0 z-40 lg:hidden">
           <div className="absolute inset-0 bg-foreground/40" onClick={() => setOpen(false)} />
           <aside className="relative h-full w-64">
-            <SidebarNav config={config} onNavigate={() => setOpen(false)} />
+            <SidebarNav config={config} profile={profile} onNavigate={() => setOpen(false)} />
           </aside>
         </div>
       )}

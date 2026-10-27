@@ -1,6 +1,6 @@
 import type { ComponentType } from "react";
 import type { Role } from "@/types";
-import ShiftSchedulingPage from "@/pages/manager/ShiftSchedulingPage";
+import ShiftSchedulingPage from "@/components/features/manager/ShiftSchedulingPage";
 
 /**
  * Đăng ký trang đã triển khai theo "vai-trò/slug".

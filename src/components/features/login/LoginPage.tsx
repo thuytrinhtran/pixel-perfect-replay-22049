@@ -4,21 +4,28 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import logo from "@/assets/jollishift-logo.jpg.asset.json";
 import background from "@/assets/login-background.png.asset.json";
+import { useNavigate } from "@tanstack/react-router";
+import { signIn } from "@/services/auth";
+import { UNASSIGNED_MESSAGE } from "@/services/auth-policy";
 
-export function LoginPage() {
+export function LoginPage({ unassigned = false }: { unassigned?: boolean }) {
+  const navigate = useNavigate();
   const [visible, setVisible] = useState(false);
   const [processing, setProcessing] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState(unassigned ? UNASSIGNED_MESSAGE : "");
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (processing) return;
     setError("");
+    const form = new FormData(event.currentTarget);
     setProcessing(true);
-    // UI feedback only: no credentials are read, stored, or sent anywhere.
-    await new Promise((resolve) => setTimeout(resolve, 600));
-    setProcessing(false);
-    setError("Chưa kết nối xác thực. Hiện chưa thể đăng nhập vào hệ thống.");
+    try {
+      const profile = await signIn(String(form.get("email") ?? ""), String(form.get("password") ?? ""));
+      await navigate({ to: "/$role", params: { role: profile.role }, replace: true });
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "Không thể đăng nhập. Vui lòng thử lại.");
+    } finally { setProcessing(false); }
   }
 
   return (
@@ -50,11 +57,11 @@ export function LoginPage() {
             </div>
           </div>
           <div className="min-h-12" aria-live="polite">
-            {error ? <p role="alert" className="flex gap-2 text-sm text-destructive"><AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />{error}</p> : <p className="flex items-center gap-2 text-xs text-muted-foreground"><LockKeyhole className="h-3.5 w-3.5 shrink-0" />Chưa kết nối xác thực</p>}
+            {error && <p role="alert" className="flex gap-2 text-sm text-destructive"><AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />{error}</p>}
           </div>
           <Button type="submit" className="h-11 w-full" disabled={processing} aria-busy={processing}>
             {processing ? <LoaderCircle className="animate-spin motion-reduce:animate-none" /> : <LogIn />}
-            {processing ? "Đang xử lý…" : "Đăng nhập — Chưa kết nối xác thực"}
+            {processing ? "Đang xử lý…" : "Đăng nhập"}
           </Button>
         </form>
         <p className="mt-7 border-t border-border pt-5 text-center text-[11px] leading-relaxed text-muted-foreground">Nguyên mẫu học thuật — không phải hệ thống chính thức của Jollibee.</p>
