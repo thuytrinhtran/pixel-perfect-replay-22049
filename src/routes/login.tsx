@@ -13,5 +13,5 @@ export const Route = createFileRoute("/login")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: () => <LoginPage unassigned={Route.useSearch().unassigned} />,
+  component: () => <LoginPage unassigned={Route.useSearch().unassigned === true} />,
 });
